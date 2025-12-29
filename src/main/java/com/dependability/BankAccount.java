@@ -1,13 +1,13 @@
 package com.dependability;
 
-/**
- * BankAccount represents a bank account with JML formal specifications.
- */
 public class BankAccount {
 
     // JML: Mark private field as public for specification purposes
-    //@ public spec_public
+    /*@ public spec_public @*/
     private double balance;
+    
+    // New field for the owner name
+    private String owner;
 
     // JML: Invariant - Balance must never be negative
     /*@ public invariant balance >= 0.0; @*/
@@ -15,22 +15,26 @@ public class BankAccount {
     /**
      * Creates a new bank account with an initial balance.
      */
-    /*@ 
-      @ requires initialBalance >= 0.0;
+    /*@ requires initialBalance >= 0.0;
       @ ensures this.balance == initialBalance;
       @*/
-    public BankAccount(double initialBalance) {
+    public BankAccount(String owner, double initialBalance) {
         if (initialBalance < 0) {
             throw new IllegalArgumentException("Balance cannot be negative");
         }
+        this.owner = owner;
         this.balance = initialBalance;
+    }
+
+    // Getter for owner (Required for tests)
+    public String getOwner() {
+        return owner;
     }
 
     /**
      * Deposits money into the account.
      */
-    /*@ 
-      @ requires amount > 0.0;
+    /*@ requires amount > 0.0;
       @ ensures balance == \old(balance) + amount;
       @*/
     public void deposit(double amount) {
@@ -43,9 +47,8 @@ public class BankAccount {
     /**
      * Withdraws money from the account.
      */
-    /*@ 
-      @ requires amount > 0.0;
-      @ requires amount <= balance;
+    /*@ requires amount > 0.0;
+      @ requires amount <= this.balance;
       @ ensures balance == \old(balance) - amount;
       @*/
     public void withdraw(double amount) {
@@ -61,9 +64,7 @@ public class BankAccount {
     /**
      * Returns the current balance.
      */
-    /*@ 
-      @ ensures \result == balance;
-      @*/
+    /*@ ensures \result == balance; @*/
     public /*@ pure @*/ double getBalance() {
         return this.balance;
     }
