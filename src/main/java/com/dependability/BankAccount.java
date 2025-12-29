@@ -1,12 +1,24 @@
 package com.dependability;
 
 /**
- * BankAccount represents a simple bank account with basic operations.
+ * BankAccount represents a bank account with JML formal specifications.
  */
 public class BankAccount {
+
+    // JML: Mark private field as public for specification purposes
+    //@ public spec_public
     private double balance;
 
-    // Constructor to initialize the account
+    // JML: Invariant - Balance must never be negative
+    /*@ public invariant balance >= 0.0; @*/
+
+    /**
+     * Creates a new bank account with an initial balance.
+     */
+    /*@ 
+      @ requires initialBalance >= 0.0;
+      @ ensures this.balance == initialBalance;
+      @*/
     public BankAccount(double initialBalance) {
         if (initialBalance < 0) {
             throw new IllegalArgumentException("Balance cannot be negative");
@@ -14,7 +26,13 @@ public class BankAccount {
         this.balance = initialBalance;
     }
 
-    // Method to deposit money
+    /**
+     * Deposits money into the account.
+     */
+    /*@ 
+      @ requires amount > 0.0;
+      @ ensures balance == \old(balance) + amount;
+      @*/
     public void deposit(double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Deposit amount must be positive");
@@ -22,7 +40,14 @@ public class BankAccount {
         this.balance += amount;
     }
 
-    // Method to withdraw money
+    /**
+     * Withdraws money from the account.
+     */
+    /*@ 
+      @ requires amount > 0.0;
+      @ requires amount <= balance;
+      @ ensures balance == \old(balance) - amount;
+      @*/
     public void withdraw(double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Withdrawal amount must be positive");
@@ -33,8 +58,13 @@ public class BankAccount {
         this.balance -= amount;
     }
 
-    // Method to check current balance
-    public double getBalance() {
+    /**
+     * Returns the current balance.
+     */
+    /*@ 
+      @ ensures \result == balance;
+      @*/
+    public /*@ pure @*/ double getBalance() {
         return this.balance;
     }
 }
